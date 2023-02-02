@@ -15,12 +15,17 @@ Then to compile wrapper for various shared memory files...
 ### Assetto Corsa
 ```
 make CFLAGS=-DASSETTOCORSA
-
+```
 ## Usage Example
 
 ```
-protontricks --no-runtime --background-wineserver -c "wine /home/racedev/git/wine-linux-shm-adapter/assets/shmwrapper1.exe 'acpmf_physics' r /home/racedev/git/wine-linux-shm-adapter/assets/shmwrapper2.bin" 244210
+./createsimshm
 ```
+in a separate terminal
+```
+protontricks --no-runtime --background-wineserver -c "wine /path/to/simshmbridge.exe" 244210
+```
+you can exit createsimshm by pressing "q" and simshmbridge.exe by pressing ctrl-c
 
 ## ToDo
  - Support more sims/programs
