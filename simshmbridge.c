@@ -8,7 +8,7 @@
 #include "simapi/simapi/ac.h"
 #include "simapi/include/acdata.h"
 
-char filefind = "acpmf_*";
+LPCSTR filefind = "acpmf_*";
 
 int getmemfilesize(const char* filename)
 {
