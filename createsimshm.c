@@ -15,6 +15,11 @@
 #include "simapi/include/acdata.h"
 #include "simapi/simmap/mapacdata.h"
 #endif
+#ifdef RFACTOR2
+#include "simapi/simapi/rf2.h"
+#include "simapi/include/rf2data.h"
+#include "simapi/simmap/maprf2data.h"
+#endif
 
 #define DEFAULT_UPDATE_RATE      60.0
 
@@ -38,6 +43,18 @@ int main(int argc, char* argv[])
 #define MEMFILECNT2
 #define MEMFILECNT3
 #define MEMFILECNT4
+
+#endif
+#ifdef RFACTOR2
+
+    char* memfile1 = RF2_TELEMETRY_FILE;
+    char* memfile2 = RF2_SCORING_FILE;
+
+    int datasize1 = sizeof(struct rF2Telemetry);
+    int datasize2 = sizeof(struct rF2Scoring);
+
+#define MEMFILECNT1
+#define MEMFILECNT2
 
 #endif
 

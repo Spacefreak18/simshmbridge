@@ -20,6 +20,25 @@ int getmemfilesize(const char* filename)
     return 2048;
 }
 #endif
+#ifdef RFACTOR2
+#include "simapi/simapi/rf2.h"
+#include "simapi/include/rf2data.h"
+
+LPCSTR filefind = "rFactor*";
+
+int getmemfilesize(const char* filename)
+{
+    if(strcmp(filename, RF2_TELEMETRY_FILE) == 0)
+    {
+        return sizeof(struct rF2Telemetry);
+    }
+    if(strcmp(filename, RF2_SCORING_FILE) == 0)
+    {
+        return sizeof(struct rF2Scoring);
+    }
+    return 4096;
+}
+#endif
 
 int main(int argc, char** argv)
 {
