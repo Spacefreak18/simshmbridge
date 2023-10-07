@@ -7,6 +7,7 @@
 #include <sys/stat.h>
 #include <poll.h>
 #include <termios.h>
+#include <stdbool.h>
 
 
 
@@ -33,16 +34,31 @@ int main(int argc, char* argv[])
     char* memfile2 = AC_GRAPHIC_FILE;
     char* memfile3 = AC_STATIC_FILE;
     char* memfile4 = AC_CREWCHIEF_FILE;
+    char* memfile5 = "acpmf_secondMonitor";
 
     int datasize1 = sizeof(struct SPageFilePhysics);
     int datasize2 = sizeof(struct SPageFileGraphic);
     int datasize3 = sizeof(struct SPageFileStatic);
     int datasize4 = sizeof(struct SPageFileCrewChief);
+    int datasize5 = sizeof(struct SPageFileCrewChief);
 
 #define MEMFILECNT1
 #define MEMFILECNT2
 #define MEMFILECNT3
 #define MEMFILECNT4
+//#define MEMFILECNT5
+
+#endif
+#ifdef RFACTOR2
+
+    char* memfile1 = RF2_TELEMETRY_FILE;
+    char* memfile2 = RF2_SCORING_FILE;
+
+    int datasize1 = sizeof(struct rF2Telemetry);
+    int datasize2 = sizeof(struct rF2Scoring);
+
+#define MEMFILECNT1
+#define MEMFILECNT2
 
 #endif
 #ifdef RFACTOR2
@@ -142,8 +158,29 @@ int main(int argc, char* argv[])
         return 30;
     }
 #endif
+#ifdef MEMFILECNT5
+    int fd5 = shm_open(memfile5, O_RDWR | O_CREAT, S_IRUSR | S_IWUSR);
+    if (fd5 == -1)
+    {
+        printf("open");
+        return 10;
+    }
+    int res5 = ftruncate(fd5, datasize5);
+    if (res5 == -1)
+    {
+        printf("ftruncate");
+        return 20;
+    }
 
-    fprintf(stderr, "Press Q after all processes using shared memory are closed, to release the shared memory files.");
+    void* addr5 = mmap(NULL, datasize5, PROT_WRITE, MAP_SHARED, fd5, 0);
+    if (addr5 == MAP_FAILED)
+    {
+        printf("mmap");
+        return 30;
+    }
+#endif
+
+    fprintf(stderr, "Press q after all processes using shared memory are closed, to release the shared memory files.");
 
     struct termios newsettings, canonicalmode;
     tcgetattr(0, &canonicalmode);
@@ -184,6 +221,9 @@ int main(int argc, char* argv[])
 #ifdef MEMFILECNT4
     munmap(addr4, datasize4);
 #endif
+#ifdef MEMFILECNT5
+    munmap(addr5, datasize5);
+#endif
 
 #ifdef MEMFILECNT1
     shm_unlink(memfile1);
@@ -197,6 +237,9 @@ int main(int argc, char* argv[])
 #ifdef MEMFILECNT4
     shm_unlink(memfile4);
 #endif
+#ifdef MEMFILECNT5
+    shm_unlink(memfile5);
+#endif
 
 #ifdef MEMFILECNT1
     close(fd1);
@@ -209,6 +252,9 @@ int main(int argc, char* argv[])
 #endif
 #ifdef MEMFILECNT4
     close(fd4);
+#endif
+#ifdef MEMFILECNT5
+    close(fd5);
 #endif
 
 

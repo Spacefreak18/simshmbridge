@@ -16,6 +16,10 @@ int getmemfilesize(const char* filename)
     {
         return sizeof(struct SPageFileCrewChief);
     }
+    if(strcmp(filename, "acpmf_secondMonitor") == 0)
+    {
+        return sizeof(struct SPageFileCrewChief);
+    }
 
     return 2048;
 }
