@@ -14,12 +14,17 @@
 #ifdef ASSETTOCORSA
 #include "simapi/simapi/ac.h"
 #include "simapi/include/acdata.h"
-#include "simapi/simmap/mapacdata.h"
+//#include "simapi/simmap/mapacdata.h"
 #endif
 #ifdef RFACTOR2
 #include "simapi/simapi/rf2.h"
 #include "simapi/include/rf2data.h"
-#include "simapi/simmap/maprf2data.h"
+//#include "simapi/simmap/maprf2data.h"
+#endif
+#ifdef PROJECTCARS2
+#include "simapi/simapi/pcars2.h"
+#include "simapi/include/pcars2data.h"
+//#include "simapi/simmap/mappcars2data.h"
 #endif
 
 #define DEFAULT_UPDATE_RATE      60.0
@@ -61,16 +66,13 @@ int main(int argc, char* argv[])
 #define MEMFILECNT2
 
 #endif
-#ifdef RFACTOR2
+#ifdef PROJECTCARS2
 
-    char* memfile1 = RF2_TELEMETRY_FILE;
-    char* memfile2 = RF2_SCORING_FILE;
+    char* memfile1 = PCARS2_FILE;
 
-    int datasize1 = sizeof(struct rF2Telemetry);
-    int datasize2 = sizeof(struct rF2Scoring);
+    int datasize1 = sizeof(struct pcars2APIStruct);
 
 #define MEMFILECNT1
-#define MEMFILECNT2
 
 #endif
 
