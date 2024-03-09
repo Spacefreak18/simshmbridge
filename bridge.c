@@ -16,6 +16,7 @@
 #define MEM_FILE_LOCATION "$pcars2"
 typedef struct pcars2APIStruct SharedMemory1;
 #define SHAREDMEMORY1
+double UPDATE_RATE = 480;
 #endif
 
 
@@ -57,7 +58,7 @@ int main(int argc, char** argv) {
 
 
 
-    double update_rate = 480;
+    double update_rate = UPDATE_RATE;
     int go = 0;
 
     while (go == 0)
