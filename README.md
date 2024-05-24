@@ -33,6 +33,7 @@ The best way is to run the wrapper from the Proton Launch Command.
 %command% & ~/shmwrap/ac/createsimshm & sleep 5 && ~/.steam/steam/steamapps/common/Proton\ 8.0/proton run ~/shmwrap/ac/simshmbridge.exe;
 ```
 ### Project Cars 2 and Automobilista 2
+```
 `%command% & sleep 30 && ~/.steam/steam/steamapps/common/Proton\ 8.0proton run ~/shmwrap/pcars2/simshmbridge.exe ~/shmwrap/pcars2/bridge``
 ```
 ### Manually
