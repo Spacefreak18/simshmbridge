@@ -59,6 +59,7 @@ export WINEARCH="win64"
 
 wine /home/racerx/shmwrap/ac/acs.exe
 ```
+make sure createsimshm is running and the shared memory files are in /dev/shm.
 then you can start crewchief however you are starting crewchief. One could even add this to a launcher, but you'd need separate launchers for each sim. Crewchief
 looks for certain executable names to know if the sim is running. To determine the name of the executable, I read the code [here](https://gitlab.com/mr_belowski/CrewChiefV4/-/blob/master/CrewChiefV4/GameDefinition.cs)
 

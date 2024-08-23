@@ -26,7 +26,7 @@ double UPDATE_RATE = 480;
 #define MEM_FILE_LOCATION "$pcars2"
 typedef struct pcars2APIStruct SharedMemory1;
 #define SHAREDMEMORY1
-double UPDATE_RATE = 480;
+double UPDATE_RATE = 240;
 #endif
 
 
@@ -87,12 +87,12 @@ int main(int argc, char** argv) {
 	}
 
     close(duplicated_stdin);
-    fd = shm_unlink(MEM_FILE_LOCATION);
-	if (fd == -1)
-	{
-		perror("unlink");
-		return 100;
-	}
+    //fd = shm_unlink(MEM_FILE_LOCATION);
+    //if (fd == -1)
+    //{
+    //	perror("unlink");
+    //	return 100;
+    //}
 
     return 0;
 }

@@ -30,14 +30,19 @@ int getmemfilesize(const char* filename)
         return sizeof(struct SPageFileCrewChief);
     }
 
-    return 2048;
+    return 4096;
 }
 #endif
 #ifdef RFACTOR2
 #include "simapi/simapi/rf2.h"
 #include "simapi/include/rf2data.h"
 
-LPCSTR filefind = "rFactor*";
+LPCSTR filefind = "$rFactor2*";
+#define HELPERPROCESSFIRST
+
+//#define RF2_TELEMETRY_FILE "$rFactor2SMMP_Telemetry$"
+//#define RF2_SCORING_FILE "$rFactor2SMMP_Scoring$"
+typedef struct rF2Scoring SharedMemory1;
 
 int getmemfilesize(const char* filename)
 {
@@ -151,6 +156,7 @@ int main(int argc, char** argv)
         printf("Could not change directory to /dev/shm: %s\n", strerror(errno));
         return 1;
     }
+    // TODO: change this to a loop until it's up and running
     if ((ffhandle = FindFirstFile(filefind, &fdata)) == INVALID_HANDLE_VALUE)
     {
         DWORD err = GetLastError();
@@ -232,27 +238,34 @@ int main(int argc, char** argv) {
 
 #ifdef DEBUG
     unsigned char* mapfb;
-    mapfb = (unsigned char*)MapViewOfFile(maph, FILE_MAP_READ, 0, 0, sizeof(SharedMemory));
-    SharedMemory* b = malloc(sizeof(SharedMemory));
-    b = (SharedMemory*)mapfb;
+    mapfb = (unsigned char*)MapViewOfFile(maph, FILE_MAP_READ, 0, 0, sizeof(SharedMemory1));
+    SharedMemory1* b = malloc(sizeof(SharedMemory1));
+    b = (SharedMemory1*)mapfb;
 
-    fprintf(stderr, "buf contains: %d\n", b->mNumVehicles);
-    fprintf(stderr, "buf contains: %d\n", b->mVehicles[0].mLapNumber);
-    fprintf(stderr, "buf contains: %lf\n", b->mVehicles[0].mLocalVel.x);
-    fprintf(stderr, "buf contains: %lf\n", b->mVehicles[0].mLocalVel.y);
-    fprintf(stderr, "buf contains: %lf\n", b->mVehicles[0].mLocalVel.z);
-    fprintf(stderr, "buf contains: %d\n", b->mVehicles[0].mGear);
-    fprintf(stderr, "buf contains: %lf\n", b->mVehicles[0].mEngineRPM);
+    //fprintf(stderr, "buf contains: %d\n", b->mNumVehicles);
+    //fprintf(stderr, "buf contains: %d\n", b->mVehicles[0].mLapNumber);
+    //fprintf(stderr, "buf contains: %lf\n", b->mVehicles[0].mLocalVel.x);
+    //fprintf(stderr, "buf contains: %lf\n", b->mVehicles[0].mLocalVel.y);
+    //fprintf(stderr, "buf contains: %lf\n", b->mVehicles[0].mLocalVel.z);
+    //fprintf(stderr, "buf contains: %d\n", b->mVehicles[0].mGear);
+    //fprintf(stderr, "buf contains: %lf\n", b->mVehicles[0].mEngineRPM);
+
+    fprintf(stderr, "buf contains: %i\n", b->mVersion);
+    fprintf(stderr, "buf contains: %i\n", b->mBuildVersionNumber);
+    fprintf(stderr, "buf contains: %i\n", b->mGameState);
+    fprintf(stderr, "buf contains: %i\n", b->mSessionState);
+    fprintf(stderr, "buf contains: %i\n", b->mRaceState);
+
     FILE *outfile;
 
-    outfile = fopen ("/home/racedev/telemetry.dat", "w");
+    outfile = fopen ("/home/racerx/telemetry.dat", "w");
     if (outfile == NULL)
     {
         fprintf(stderr, "\nError opened file\n");
         exit (1);
     }
 
-    fwrite (b, sizeof(SharedMemory), 1, outfile);
+    fwrite (b, sizeof(SharedMemory1), 1, outfile);
 
     if(fwrite != 0)
         printf("contents to file written successfully !\n");
@@ -273,9 +286,10 @@ int main(int argc, char** argv) {
         fprintf(stderr, "failed to launch second helper process: %s\n", strerror(GetLastError()));
     }
 
-    for (;;)
+    fprintf(stderr, "Mapped and sleeping forever: %s\n");
+    while (1)
     {
-        _sleep(1);
+        sleep(10000000);
     }
 }
 #endif
