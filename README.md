@@ -28,9 +28,10 @@ bridge - manually moves memory into Linux shared memory for Simulators that do n
 ## Basic Mapping Examples
 
 The best way is to run the wrapper from the Proton Launch Command.
+And in a separate terminal or tab start ./createsimshm.
 ### Assetto Corsa and Assetto Corsa Competizione
 ```
-%command% & ~/shmwrap/ac/createsimshm & sleep 5 && ~/.steam/steam/steamapps/common/Proton\ 8.0/proton run ~/shmwrap/ac/simshmbridge.exe
+%command% & sleep 5 && ~/.steam/steam/steamapps/common/Proton\ 8.0/proton run ~/shmwrap/ac/simshmbridge.exe
 ```
 ### Project Cars 2 and Automobilista 2
 ```
