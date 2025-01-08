@@ -1,0 +1,16 @@
+all: assets/pcars2shm assets/pcars2bridge.exe
+
+CC=gcc
+WINECC=i686-w64-mingw32-gcc
+CFLAGS=-DASSETTOCORSA -Wall -Os -g
+
+assets/pcars2shm: createsimshm.c
+	$(CC) $< $(CFLAGS) -o $@
+
+assets/pcars2bridge.exe: simshmbridge.c
+	$(WINECC) $< $(CFLAGS) -mconsole -o $@
+
+clean:
+	rm -f assets/pcars2shm assets/pcars2bridge.exe
+
+# vim: syntax=make ts=4 sw=4 sts=4 sr noet
