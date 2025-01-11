@@ -1,10 +1,10 @@
 all: assets/pcars2shm assets/pcars2bridge.exe
 
 CC=gcc
-WINECC=i686-w64-mingw32-gcc
+WINECC=x86_64-w64-mingw32-gcc
 CFLAGS=-DPROJECTCARS2 -Wall -Os -g
 
-assets/pcars2shm: createsimshm.c
+assets/pcars2shm: bridge.c
 	$(CC) $< $(CFLAGS) -o $@
 
 assets/pcars2bridge.exe: simshmbridge.c
