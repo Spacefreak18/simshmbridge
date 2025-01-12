@@ -83,8 +83,8 @@ int main(int argc, char** argv) {
 #endif
 
 
-		usleep((unsigned long)(1000000.0/update_rate));
-	}
+	usleep((unsigned long)(1000000.0/update_rate));
+    }
 
     close(duplicated_stdin);
     //fd = shm_unlink(MEM_FILE_LOCATION);
