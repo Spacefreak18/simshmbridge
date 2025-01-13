@@ -1,4 +1,5 @@
 #include <windows.h>
+#include <conio.h>
 #include <stdio.h>
 #include <errno.h>
 #include <string.h>
@@ -11,8 +12,6 @@
 #include "simapi/simapi/ac.h"
 #include "simapi/include/acdata.h"
 
-#define HELPERPROCESSFIRST
-
 LPCSTR filefind = "acpmf_*";
 
 typedef struct SPageFilePhysics SharedMemory1;
@@ -21,6 +20,18 @@ int getmemfilesize(const char* filename)
 {
 
 
+    if(strcmp(filename, AC_PHYSICS_FILE) == 0)
+    {
+        return sizeof(struct SPageFilePhysics);
+    }
+    if(strcmp(filename, AC_STATIC_FILE) == 0)
+    {
+        return sizeof(struct SPageFileStatic);
+    }
+    if(strcmp(filename, AC_GRAPHIC_FILE) == 0)
+    {
+        return sizeof(struct SPageFileGraphic);
+    }
     if(strcmp(filename, AC_CREWCHIEF_FILE) == 0)
     {
         return sizeof(struct SPageFileCrewChief);
@@ -33,15 +44,13 @@ int getmemfilesize(const char* filename)
     return 4096;
 }
 #endif
+
 #ifdef RFACTOR2
 #include "simapi/simapi/rf2.h"
 #include "simapi/include/rf2data.h"
 
 LPCSTR filefind = "$rFactor2*";
-#define HELPERPROCESSFIRST
 
-//#define RF2_TELEMETRY_FILE "$rFactor2SMMP_Telemetry$"
-//#define RF2_SCORING_FILE "$rFactor2SMMP_Scoring$"
 typedef struct rF2Scoring SharedMemory1;
 
 int getmemfilesize(const char* filename)
@@ -61,8 +70,6 @@ int getmemfilesize(const char* filename)
 #ifdef PROJECTCARS2
 #include "simapi/simapi/pcars2.h"
 #include "simapi/include/pcars2data.h"
-
-#define HELPERPROCESSSECOND
 
 typedef struct pcars2APIStruct SharedMemory1;
 
@@ -131,23 +138,6 @@ void hexDump(char *desc, void *addr, int len)
 #ifdef HELPERPROCESSFIRST
 int main(int argc, char** argv)
 {
-    STARTUPINFO si;
-    PROCESS_INFORMATION pi;
-    //SetStdHandle(STD_INPUT_HANDLE, maph);
-    ZeroMemory(&si, sizeof(STARTUPINFO));
-    si.cb = sizeof(STARTUPINFO);
-    //si.hStdInput = maph;
-    si.dwFlags |= STARTF_USESTDHANDLES;
-    ZeroMemory(&pi, sizeof(PROCESS_INFORMATION));
-
-    if (argc > 1)
-    {
-    if (!CreateProcess(NULL, argv[1], NULL, NULL, FALSE, CREATE_NEW_PROCESS_GROUP, NULL, NULL, &si, &pi))
-    {
-        fprintf(stderr, "failed to launch second helper process: %s\n", strerror(GetLastError()));
-    }
-    }
-    sleep(2);
 
     WIN32_FIND_DATA fdata;
     HANDLE ffhandle;
@@ -177,7 +167,8 @@ int main(int argc, char** argv)
     do
     {
         HANDLE fd = CreateFile(fdata.cFileName, GENERIC_READ|GENERIC_WRITE|GENERIC_EXECUTE, FILE_SHARE_READ|FILE_SHARE_WRITE,
-                               NULL, OPEN_EXISTING, FILE_ATTRIBUTE_NORMAL, NULL);
+                NULL, OPEN_EXISTING, FILE_ATTRIBUTE_NORMAL, NULL);
+
         if (fd == INVALID_HANDLE_VALUE)
         {
             printf("warning: could not open %s: %s\n", fdata.cFileName, strerror(GetLastError()));
@@ -201,11 +192,18 @@ int main(int argc, char** argv)
     while (FindNextFile(ffhandle, &fdata));
 
 
-    printf("Done! Sleeping forever to keep objects alive, press Ctrl-C to stop\n");
+    printf("Done! Sleeping forever to keep objects alive, press Shift-E to stop\n");
 #ifndef DEBUG
-    while (1)
+    int key = 0;
+    while(1)
     {
-        sleep(10000000);
+        if (_kbhit())
+        {
+            key =_getch();
+
+            if (key == 'E')
+                break;
+        }
 #endif
 #ifdef DEBUG
     for (;;)
@@ -286,10 +284,17 @@ int main(int argc, char** argv) {
         fprintf(stderr, "failed to launch second helper process: %s\n", strerror(GetLastError()));
     }
 
-    fprintf(stderr, "Mapped and sleeping forever: %s\n");
-    while (1)
+    fprintf(stderr, "Mapped and sleeping forever Press Shift-E to stop: %s\n");
+    int key = 0;
+    while(1)
     {
-        sleep(10000000);
+        if (_kbhit())
+        {
+            key =_getch();
+
+            if (key == 'E')
+                break;
+        }
     }
 }
 #endif

@@ -2,7 +2,7 @@ all: assets/acshm assets/acbridge.exe
 
 CC=gcc
 WINECC=x86_64-w64-mingw32-gcc
-CFLAGS=-DASSETTOCORSA -Wall -Os -g
+CFLAGS=-DASSETTOCORSA -DHELPERPROCESSFIRST -Wall -Os -g
 
 assets/acshm: createsimshm.c
 	$(CC) $< $(CFLAGS) -o $@

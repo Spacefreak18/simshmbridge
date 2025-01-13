@@ -1,0 +1,14 @@
+all: assets/rf2bridge.exe
+
+CC=gcc
+WINECC=x86_64-w64-mingw32-gcc
+CFLAGS=-DRFACTOR2 -DHELPERPROCESSFIRST -Wall -Os -g
+
+
+assets/rf2bridge.exe: simshmbridge.c
+	$(WINECC) $< $(CFLAGS) -mconsole -o $@
+
+clean:
+	rm -f assets/rf2bridge.exe
+
+# vim: syntax=make ts=4 sw=4 sts=4 sr noet
