@@ -1,19 +1,22 @@
-all: assets/pcars2shm assets/pcars2bridge.exe assets/pcars2.exe
+all: assets/pcars2shm assets/pcars2handle assets/pcars2handle.exe assets/pcars2bridge.exe
 
 CC=gcc
 WINECC=x86_64-w64-mingw32-gcc
 CFLAGS=-DPROJECTCARS2 -Wall -Os -g
 
-assets/pcars2shm: bridge.c
+assets/pcars2shm: createsimshm.c
 	$(CC) $< $(CFLAGS) -o $@
 
-assets/pcars2bridge.exe: simshmbridge.c
+assets/pcars2handle: bridge.c
+	$(CC) $< $(CFLAGS) -o $@
+
+assets/pcars2handle.exe: simshmbridge.c
 	$(WINECC) $< $(CFLAGS) -DHELPERPROCESSSECOND -mconsole -o $@
 
-assets/pcars2.exe: simshmbridge.c
+assets/pcars2bridge.exe: simshmbridge.c
 	$(WINECC) $< $(CFLAGS) -DHELPERPROCESSFIRST -mconsole -o $@
 
 clean:
-	rm -f assets/pcars2shm assets/pcars2bridge.exe assets/pcars2.exe
+	rm -f assets/pcars2shm assets/pcars2handle assets/pcars2handle.exe assets/pcars2bridge.exe
 
 # vim: syntax=make ts=4 sw=4 sts=4 sr noet

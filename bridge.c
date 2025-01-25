@@ -17,16 +17,16 @@
 #define MEM_FILE_LOCATION "acpmf_physics"
 typedef struct SPageFilePhysics SharedMemory1;
 #define SHAREDMEMORY1
-double UPDATE_RATE = 480;
+double UPDATE_RATE = 960;
 #endif
 
 #ifdef PROJECTCARS2
 #include "simapi/include/pcars2data.h"
 
-#define MEM_FILE_LOCATION "$pcars2"
+#define MEM_FILE_LOCATION "$pcars2$"
 typedef struct pcars2APIStruct SharedMemory1;
 #define SHAREDMEMORY1
-double UPDATE_RATE = 240;
+double UPDATE_RATE = 960;
 #endif
 
 

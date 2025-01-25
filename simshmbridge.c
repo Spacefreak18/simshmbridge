@@ -13,6 +13,7 @@
 #include "simapi/include/acdata.h"
 
 LPCSTR filefind = "acpmf_*";
+LPCSTR file1 = AC_PHYSICS_FILE;
 
 typedef struct SPageFilePhysics SharedMemory1;
 
@@ -222,16 +223,17 @@ int main(int argc, char** argv) {
     DWORD access = 0;
     STARTUPINFO si;
     PROCESS_INFORMATION pi;
-    HANDLE maph;
+    HANDLE maph = NULL;
 
-    // this may need to be extended to loop through an array of files
 
-    maph = CreateFileMapping(INVALID_HANDLE_VALUE, NULL, FILE_MAP_READ, 0, sizeof(SharedMemory1), file1);
-
-    if (maph == NULL) {
-        fprintf(stderr, "failed to open mapping %s: %s\n", file1, strerror(GetLastError()));
-        return 1;
+    fprintf(stderr, "Waiting to map first shared memory file.");
+    while(maph == NULL) {
+        maph = OpenFileMapping(FILE_MAP_READ, FALSE, file1);
+        Sleep(3000);
     }
+    CloseHandle(maph);
+    maph = CreateFileMapping(INVALID_HANDLE_VALUE, NULL, FILE_MAP_READ, 0, sizeof(SharedMemory1), file1);
+    fprintf(stderr, "Mapped first shared memory file, mapping any necessary remaining shared memory files.");
 
 
 #ifdef DEBUG
@@ -256,21 +258,21 @@ int main(int argc, char** argv) {
 
     FILE *outfile;
 
-    outfile = fopen ("/home/racerx/telemetry.dat", "w");
-    if (outfile == NULL)
-    {
-        fprintf(stderr, "\nError opened file\n");
-        exit (1);
-    }
+    //outfile = fopen ("/home/racerx/telemetry.dat", "w");
+    //if (outfile == NULL)
+    //{
+    //    fprintf(stderr, "\nError opened file\n");
+    //    exit (1);
+    //}
 
-    fwrite (b, sizeof(SharedMemory1), 1, outfile);
+    //fwrite (b, sizeof(SharedMemory1), 1, outfile);
 
-    if(fwrite != 0)
-        printf("contents to file written successfully !\n");
-    else
-        printf("error writing file !\n");
+    //if(fwrite != 0)
+    //    printf("contents to file written successfully !\n");
+    //else
+    //    printf("error writing file !\n");
 
-    fclose (outfile);
+    //fclose (outfile);
 #endif
 
     SetStdHandle(STD_INPUT_HANDLE, maph);
@@ -284,7 +286,7 @@ int main(int argc, char** argv) {
         fprintf(stderr, "failed to launch second helper process: %s\n", strerror(GetLastError()));
     }
 
-    fprintf(stderr, "Mapped and sleeping forever Press Shift-E to stop: %s\n");
+    fprintf(stderr, "Mapped and sleeping forever Press Shift-E to stop");
     int key = 0;
     while(1)
     {

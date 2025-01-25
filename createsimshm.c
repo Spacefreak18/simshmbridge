@@ -41,9 +41,9 @@ int main(int argc, char* argv[])
     char* memfile4 = AC_CREWCHIEF_FILE;
     char* memfile5 = "acpmf_secondMonitor";
 
-    int datasize1 = 4096;//sizeof(struct SPageFilePhysics);
-    int datasize2 = 4096;//sizeof(struct SPageFileGraphic);
-    int datasize3 = 4096;//sizeof(struct SPageFileStatic);
+    int datasize1 = sizeof(struct SPageFilePhysics);
+    int datasize2 = sizeof(struct SPageFileGraphic);
+    int datasize3 = sizeof(struct SPageFileStatic);
     int datasize4 = sizeof(struct SPageFileCrewChief);
     int datasize5 = sizeof(struct SPageFileCrewChief);
 
@@ -68,7 +68,7 @@ int main(int argc, char* argv[])
 #endif
 #ifdef PROJECTCARS2
 
-    char* memfile1 = "$pcars2";
+    char* memfile1 = PCARS2_FILE;
 
     int datasize1 = sizeof(struct pcars2APIStruct);
 

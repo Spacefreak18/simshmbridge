@@ -1,16 +1,22 @@
-all: assets/acshm assets/acbridge.exe
+all: assets/acshm assets/acbridge.exe assets/achandle.exe assets/achandle
 
 CC=gcc
 WINECC=x86_64-w64-mingw32-gcc
-CFLAGS=-DASSETTOCORSA -DHELPERPROCESSFIRST -Wall -Os -g
+CFLAGS=-DASSETTOCORSA -Wall -Os -g
 
 assets/acshm: createsimshm.c
 	$(CC) $< $(CFLAGS) -o $@
 
+assets/achandle: bridge.c
+	$(CC) $< $(CFLAGS) -o $@
+
 assets/acbridge.exe: simshmbridge.c
-	$(WINECC) $< $(CFLAGS) -mconsole -o $@
+	$(WINECC) $< $(CFLAGS) -DHELPERPROCESSFIRST -mconsole -o $@
+
+assets/achandle.exe: simshmbridge.c
+	$(WINECC) $< $(CFLAGS) -DHELPERPROCESSSECOND -mconsole -o $@
 
 clean:
-	rm -f assets/acshm assets/acbridge.exe
+	rm -f assets/acshm assets/acbridge.exe assets/achandle.exe assets/achandle
 
 # vim: syntax=make ts=4 sw=4 sts=4 sr noet
