@@ -7,6 +7,7 @@
 
 //#define DEBUG
 
+int pids[4];
 
 #ifdef ASSETTOCORSA
 #include "simapi/simapi/ac.h"
@@ -15,12 +16,20 @@
 LPCSTR filefind = "acpmf_*";
 LPCSTR file1 = AC_PHYSICS_FILE;
 
+int numfiles = 4;
+const char* files[] =
+{
+    AC_PHYSICS_FILE,
+    AC_STATIC_FILE,
+    AC_GRAPHIC_FILE,
+    AC_CREWCHIEF_FILE
+};
+
+
 typedef struct SPageFilePhysics SharedMemory1;
 
 int getmemfilesize(const char* filename)
 {
-
-
     if(strcmp(filename, AC_PHYSICS_FILE) == 0)
     {
         return sizeof(struct SPageFilePhysics);
@@ -76,6 +85,12 @@ typedef struct pcars2APIStruct SharedMemory1;
 
 LPCSTR filefind = PCARS2_FILE;
 LPCSTR file1 = PCARS2_FILE;
+
+int numfiles = 1;
+const char* files[] =
+{
+    PCARS2_FILE,
+};
 
 int getmemfilesize(const char* filename)
 {
@@ -222,7 +237,7 @@ int main(int argc, char** argv) {
     char *access_mode;
     DWORD access = 0;
     STARTUPINFO si;
-    PROCESS_INFORMATION pi;
+    PROCESS_INFORMATION pi[numfiles];
     HANDLE maph = NULL;
 
 
@@ -233,7 +248,7 @@ int main(int argc, char** argv) {
     }
     CloseHandle(maph);
     maph = CreateFileMapping(INVALID_HANDLE_VALUE, NULL, FILE_MAP_READ, 0, sizeof(SharedMemory1), file1);
-    fprintf(stderr, "Mapped first shared memory file, mapping any necessary remaining shared memory files.");
+    fprintf(stderr, "Mapped first shared memory file, mapping any necessary remaining shared memory files.\n");
 
 
 #ifdef DEBUG
@@ -280,10 +295,18 @@ int main(int argc, char** argv) {
     si.cb = sizeof(STARTUPINFO);
     si.hStdInput = maph;
     si.dwFlags |= STARTF_USESTDHANDLES;
-    ZeroMemory(&pi, sizeof(PROCESS_INFORMATION));
 
-    if (!CreateProcess(argv[1], NULL, NULL, NULL, TRUE, 0, NULL, NULL, &si, &pi)) {
-        fprintf(stderr, "failed to launch second helper process: %s\n", strerror(GetLastError()));
+
+    for(int i = 0; i < numfiles; i++)
+    {
+        ZeroMemory(&pi[i], sizeof(PROCESS_INFORMATION));
+        size_t size = snprintf(NULL, 0, "%s %s", argv[1], files[i]);
+        char* ProcessString = malloc(size + 1);
+        sprintf(ProcessString, "%s %s", argv[1], files[i]);
+        fprintf(stderr, "starting %s\n", ProcessString);
+        HANDLE ss = CreateProcess(NULL, ProcessString, NULL, NULL, TRUE, 0, NULL, NULL, &si, &pi[i]);
+        CloseHandle(ss);
+        free(ProcessString);
     }
 
     fprintf(stderr, "Mapped and sleeping forever Press Shift-E to stop");
@@ -298,5 +321,13 @@ int main(int argc, char** argv) {
                 break;
         }
     }
+
+    for(int i = 0; i < numfiles; i++)
+    {
+        TerminateProcess(pi[i].hProcess, 0);
+        CloseHandle(pi[i].hProcess);
+        CloseHandle(pi[i].hThread);
+    }
+    return 0;
 }
 #endif
