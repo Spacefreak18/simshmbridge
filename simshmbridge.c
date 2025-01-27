@@ -243,12 +243,12 @@ int main(int argc, char** argv) {
     HANDLE maph = NULL;
 
 
-    //fprintf(stderr, "Waiting to map first shared memory file.");
-    //while(maph == NULL) {
-    //    maph = OpenFileMapping(FILE_MAP_READ, FALSE, file1);
-    //    Sleep(3000);
-    //}
-    //CloseHandle(maph);
+    fprintf(stderr, "Waiting to map first shared memory file.");
+    while(maph == NULL) {
+        maph = OpenFileMapping(FILE_MAP_READ, FALSE, file1);
+        Sleep(3000);
+    }
+    CloseHandle(maph);
     //maph = CreateFileMapping(INVALID_HANDLE_VALUE, NULL, FILE_MAP_READ, 0, sizeof(SharedMemory1), file1);
     //fprintf(stderr, "Mapped first shared memory file, mapping any necessary remaining shared memory files.\n");
 
@@ -292,7 +292,7 @@ int main(int argc, char** argv) {
     //fclose (outfile);
 #endif
 
-    SetStdHandle(STD_INPUT_HANDLE, maph);
+
     ZeroMemory(&si, sizeof(STARTUPINFO));
     si.cb = sizeof(STARTUPINFO);
     si.hStdInput = maph;
@@ -301,12 +301,14 @@ int main(int argc, char** argv) {
 
     for(int i = 0; i < numfiles; i++)
     {
-        shmhandles[i] = CreateFileMapping(INVALID_HANDLE_VALUE, NULL, FILE_MAP_READ, 0, getmemfilesize(files[i]), files[i]);
+        maph = CreateFileMapping(INVALID_HANDLE_VALUE, NULL, FILE_MAP_READ, 0, getmemfilesize(files[i]), files[i]);
         ZeroMemory(&pi[i], sizeof(PROCESS_INFORMATION));
         size_t size = snprintf(NULL, 0, "%s %s", argv[1], files[i]);
         char* ProcessString = malloc(size + 1);
         sprintf(ProcessString, "%s %s", argv[1], files[i]);
-
+        SetStdHandle(STD_INPUT_HANDLE, maph);
+        si.hStdInput = maph;
+        shmhandles[i] = maph;
         CreateProcess(NULL, ProcessString, NULL, NULL, TRUE, 0, NULL, NULL, &si, &pi[i]);
         fprintf(stderr, "started process %s at pid %li\n", ProcessString, pi[i].dwProcessId);
         free(ProcessString);
