@@ -14,6 +14,7 @@ int pids[4];
 #include "simapi/include/acdata.h"
 
 LPCSTR filefind = "acpmf_*";
+// define a single file to use as a test to see if the game has initialized the shared memory
 LPCSTR file1 = AC_PHYSICS_FILE;
 
 int numfiles = 4;
@@ -28,7 +29,7 @@ const char* files[] =
 
 typedef struct SPageFilePhysics SharedMemory1;
 
-int getmemfilesize(const char* filename)
+size_t getmemfilesize(const char* filename)
 {
     if(strcmp(filename, AC_PHYSICS_FILE) == 0)
     {
@@ -63,7 +64,7 @@ LPCSTR filefind = "$rFactor2*";
 
 typedef struct rF2Scoring SharedMemory1;
 
-int getmemfilesize(const char* filename)
+size_t getmemfilesize(const char* filename)
 {
     if(strcmp(filename, RF2_TELEMETRY_FILE) == 0)
     {
@@ -92,7 +93,7 @@ const char* files[] =
     PCARS2_FILE,
 };
 
-int getmemfilesize(const char* filename)
+size_t getmemfilesize(const char* filename)
 {
 
 
@@ -238,17 +239,18 @@ int main(int argc, char** argv) {
     DWORD access = 0;
     STARTUPINFO si;
     PROCESS_INFORMATION pi[numfiles];
+    HANDLE shmhandles[numfiles];
     HANDLE maph = NULL;
 
 
-    fprintf(stderr, "Waiting to map first shared memory file.");
-    while(maph == NULL) {
-        maph = OpenFileMapping(FILE_MAP_READ, FALSE, file1);
-        Sleep(3000);
-    }
-    CloseHandle(maph);
-    maph = CreateFileMapping(INVALID_HANDLE_VALUE, NULL, FILE_MAP_READ, 0, sizeof(SharedMemory1), file1);
-    fprintf(stderr, "Mapped first shared memory file, mapping any necessary remaining shared memory files.\n");
+    //fprintf(stderr, "Waiting to map first shared memory file.");
+    //while(maph == NULL) {
+    //    maph = OpenFileMapping(FILE_MAP_READ, FALSE, file1);
+    //    Sleep(3000);
+    //}
+    //CloseHandle(maph);
+    //maph = CreateFileMapping(INVALID_HANDLE_VALUE, NULL, FILE_MAP_READ, 0, sizeof(SharedMemory1), file1);
+    //fprintf(stderr, "Mapped first shared memory file, mapping any necessary remaining shared memory files.\n");
 
 
 #ifdef DEBUG
@@ -299,17 +301,19 @@ int main(int argc, char** argv) {
 
     for(int i = 0; i < numfiles; i++)
     {
+        shmhandles[i] = CreateFileMapping(INVALID_HANDLE_VALUE, NULL, FILE_MAP_READ, 0, getmemfilesize(files[i]), files[i]);
         ZeroMemory(&pi[i], sizeof(PROCESS_INFORMATION));
         size_t size = snprintf(NULL, 0, "%s %s", argv[1], files[i]);
         char* ProcessString = malloc(size + 1);
         sprintf(ProcessString, "%s %s", argv[1], files[i]);
-        fprintf(stderr, "starting %s\n", ProcessString);
+
         CreateProcess(NULL, ProcessString, NULL, NULL, TRUE, 0, NULL, NULL, &si, &pi[i]);
+        fprintf(stderr, "started process %s at pid %li\n", ProcessString, pi[i].dwProcessId);
         free(ProcessString);
     }
 
     SetStdHandle(STD_INPUT_HANDLE, "CONIN$");
-    fprintf(stderr, "Mapped and sleeping forever Press Shift-E to stop\n");
+    fprintf(stderr, "Mapped and sleeping forever Press Shift-E to stop ( may need to press more than once until it stops )\n");
     int key = 0;
     while(1)
     {
@@ -318,12 +322,13 @@ int main(int argc, char** argv) {
             key =_getch();
 
             if (key == 'E')
-                break;
+              break;
         }
     }
 
     for(int i = 0; i < numfiles; i++)
     {
+        CloseHandle(shmhandles[i]);
         TerminateProcess(pi[i].hProcess, 0);
         CloseHandle(pi[i].hProcess);
         CloseHandle(pi[i].hThread);
