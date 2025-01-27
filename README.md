@@ -59,10 +59,10 @@ a lot of time debugging and making all this better.
 
 ### One last overview?
 
-*shm - creates memory mapped files in unixspace
-*bridge.exe - method 1, opens memory mapped file in windows space ahead of game, backed by unix, so we can have access.
-*handle.exe - method 2, opens memory mapped file in windows space after the game, forwards the handle to the memory mapped file(s) to helper process 2
-*handle - method 2, process 2, writes from the received file descriptor from windows space, into the corresponding memory mapped file in unix space.
++ *shm - creates memory mapped files in unixspace
++ *bridge.exe - method 1, opens memory mapped file in windows space ahead of game, backed by unix, so we can have access.
++ *handle.exe - method 2, opens memory mapped file in windows space after the game, forwards the handle to the memory mapped file(s) to helper process 2
++ *handle - method 2, process 2, writes from the received file descriptor from windows space, into the corresponding memory mapped file in unix space.
 
 (the asterisk here is a place holder for the corresponding supported sim, one of "ac", "pcars2", "rf2")
 
