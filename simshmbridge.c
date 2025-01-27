@@ -224,16 +224,11 @@ int main(int argc, char** argv)
 #endif
     }
     while (FindNextFile(ffhandle, &fdata));
+    printf("Done! Sleeping forever to keep objects alive, press Ctrl-C to stop\n");
 
-
-    printf("Done! Sleeping forever to keep objects alive, press Shift-E to stop\n");
 #ifndef DEBUG
-    int key = 0;
-
     while(go == 0)
     {
-
-
         sleep(300);
         continue;
 #endif
