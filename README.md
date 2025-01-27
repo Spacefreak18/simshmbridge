@@ -51,6 +51,11 @@ of all supported memory mapped files so there is no need for (*shm). Furthermore
 the sim starts and run a user configured command when appropriate. monocoque and simmonitor are simd aware, but it do not require simd so that
 other techniques of bridging the memory can be susbstituted without breaking the application.
 
+### Are there any alternatives?
+
+Yes, now there are atleast some alternatives. Check out [DataLink](https://github.com/LukasLichten/Datalink) and [shm-bridge](https://github.com/poljar/shm-bridge) for rust-based solutions.
+The goal is the tools that use the memory such as [monocoque](https://github.com/Spacefreak18/monocoque), [simmonitor](https://github.com/Spacefreak18/simmonitor), or [DataRace](https://github.com/LukasLichten/Datalink) remain agnostic to how that data was mapped over.
+
 ### So if I use simd I don't need to run the *shm executable first?
 
 Correct, although you should still start simd before anything else. It is possible to have simd start on boot, I haven't tested this as I spend
