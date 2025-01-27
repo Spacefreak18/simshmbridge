@@ -304,8 +304,7 @@ int main(int argc, char** argv) {
         char* ProcessString = malloc(size + 1);
         sprintf(ProcessString, "%s %s", argv[1], files[i]);
         fprintf(stderr, "starting %s\n", ProcessString);
-        HANDLE ss = CreateProcess(NULL, ProcessString, NULL, NULL, TRUE, 0, NULL, NULL, &si, &pi[i]);
-        CloseHandle(ss);
+        CreateProcess(NULL, ProcessString, NULL, NULL, TRUE, 0, NULL, NULL, &si, &pi[i]);
         free(ProcessString);
     }
 
