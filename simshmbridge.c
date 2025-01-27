@@ -34,26 +34,26 @@ size_t getmemfilesize(const char* filename)
 {
     if(strcmp(filename, AC_PHYSICS_FILE) == 0)
     {
-        return sizeof(struct SPageFilePhysics);
+        return AC_PHYSICS_SIZE;
     }
     if(strcmp(filename, AC_STATIC_FILE) == 0)
     {
-        return sizeof(struct SPageFileStatic);
+        return AC_STATIC_SIZE;
     }
     if(strcmp(filename, AC_GRAPHIC_FILE) == 0)
     {
-        return sizeof(struct SPageFileGraphic);
+        return AC_GRAPHIC_SIZE;
     }
     if(strcmp(filename, AC_CREWCHIEF_FILE) == 0)
     {
-        return sizeof(struct SPageFileCrewChief);
+        return AC_CREWCHIEF_SIZE;
     }
     if(strcmp(filename, "acpmf_secondMonitor") == 0)
     {
-        return sizeof(struct SPageFileCrewChief);
+        return AC_CREWCHIEF_SIZE;
     }
 
-    return 4096;
+    return AC_CREWCHIEF_SIZE;
 }
 #endif
 
@@ -96,14 +96,12 @@ const char* files[] =
 
 size_t getmemfilesize(const char* filename)
 {
-
-
     if(strcmp(filename, PCARS2_FILE) == 0)
     {
-        return sizeof(struct pcars2APIStruct);
+        return PCARS2_SIZE;
     }
 
-    return 10000;
+    return 100000;
 }
 #endif
 
@@ -218,6 +216,7 @@ int main(int argc, char** argv)
             CloseHandle(fd);
             continue;
         }
+        // TODO: save all these handles to close them later
         printf("Bridged /dev/shm/%s of %i size to Win32 named mapping \"%s\"\n", fdata.cFileName, filesize, fdata.cFileName);
 
 #ifdef DEBUG
@@ -230,15 +229,13 @@ int main(int argc, char** argv)
     printf("Done! Sleeping forever to keep objects alive, press Shift-E to stop\n");
 #ifndef DEBUG
     int key = 0;
-    while(1)
-    {
-        if (_kbhit())
-        {
-            key =_getch();
 
-            if (key == 'E')
-                break;
-        }
+    while(go == 0)
+    {
+
+
+        sleep(300);
+        continue;
 #endif
 #ifdef DEBUG
     for (;;)
@@ -247,6 +244,7 @@ int main(int argc, char** argv)
         hexDump( NULL, a, sizeof(SharedMemory1));
 #endif
     }
+    CloseHandle(maph);
     return 0;
 }
 #endif
@@ -338,7 +336,7 @@ int main(int argc, char** argv) {
     while(go == 0)
     {
 
-        Sleep(300);
+        sleep(300);
         continue;
     }
 

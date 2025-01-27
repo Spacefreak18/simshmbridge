@@ -41,11 +41,11 @@ int main(int argc, char* argv[])
     char* memfile4 = AC_CREWCHIEF_FILE;
     char* memfile5 = "acpmf_secondMonitor";
 
-    int datasize1 = sizeof(struct SPageFilePhysics);
-    int datasize2 = sizeof(struct SPageFileGraphic);
-    int datasize3 = sizeof(struct SPageFileStatic);
-    int datasize4 = sizeof(struct SPageFileCrewChief);
-    int datasize5 = sizeof(struct SPageFileCrewChief);
+    int datasize1 = AC_PHYSICS_SIZE;
+    int datasize2 = AC_GRAPHIC_SIZE;
+    int datasize3 = AC_STATIC_SIZE;
+    int datasize4 = AC_CREWCHIEF_SIZE;
+    int datasize5 = AC_CREWCHIEF_SIZE;
 
 #define MEMFILECNT1
 #define MEMFILECNT2
@@ -70,7 +70,7 @@ int main(int argc, char* argv[])
 
     char* memfile1 = PCARS2_FILE;
 
-    int datasize1 = sizeof(struct pcars2APIStruct);
+    int datasize1 = PCARS2_SIZE;
 
 #define MEMFILECNT1
 
@@ -215,7 +215,7 @@ int main(int argc, char* argv[])
     munmap(addr1, datasize1);
 #endif
 #ifdef MEMFILECNT2
-    munmap(addr2, datasize2); 
+    munmap(addr2, datasize2);
 #endif
 #ifdef MEMFILECNT3
     munmap(addr3, datasize3);

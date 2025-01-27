@@ -34,23 +34,23 @@ size_t getSharedMemorySize(char* MemFileName)
 {
     if(strcicmp(MemFileName, PCARS2_FILE) == 0)
     {
-    	return sizeof(struct pcars2APIStruct);
+    	return PCARS2_SIZE;
     }
     if(strcicmp(MemFileName, AC_PHYSICS_FILE) == 0)
     {
-    	return sizeof(struct SPageFilePhysics);
+    	return AC_PHYSICS_SIZE;
     }
     if(strcicmp(MemFileName, AC_GRAPHIC_FILE) == 0)
     {
-    	return sizeof(struct SPageFileGraphic);
+    	return AC_GRAPHIC_SIZE;
     }
     if(strcicmp(MemFileName, AC_STATIC_FILE) == 0)
     {
-    	return sizeof(struct SPageFileStatic);
+    	return AC_STATIC_SIZE;
     }
     if(strcicmp(MemFileName, AC_CREWCHIEF_FILE) == 0)
     {
-    	return sizeof(struct SPageFileCrewChief);
+    	return AC_CREWCHIEF_SIZE;
     }
 
     return 0;

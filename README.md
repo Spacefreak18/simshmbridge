@@ -27,8 +27,7 @@ There are two methods of acheiving this bridging.
 Method 1: Run a helper process inside the target wine/proton prefix that creates the memory mapped file before the game does, and we give it the
 unix space location. [poljar](https://github.com/poljar/shm-bridge) has a great explanation with a graphic of what exactly is happening.
 
-Method 2: Method 1 does not always work. I suspect a game could check and refuse to start or throw a nasty error if the shared memory files already exist
-or exist are the incorrect size. Method 2 will always work. It relies on the fact that child processes can [inherit handles](https://learn.microsoft.com/en-us/windows/win32/procthread/inheritance) including memory mapped files
+Method 2: If method 1 does not work, method 2 should always work, though it is slower and more cumbersome. It relies on the fact that child processes can [inherit handles](https://learn.microsoft.com/en-us/windows/win32/procthread/inheritance) including memory mapped files
 from their parent process.
 
 In both situations ( although not strictly necessary in method 1 especially ), I start a process on the unix side (*shm for example acshm) which
