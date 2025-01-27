@@ -18,7 +18,7 @@
 #include "simapi/include/pcars2data.h"
 #include "simapi/simapi/pcars2.h"
 
-double UPDATE_RATE = 240;
+double UPDATE_RATE = 980;
 int go = 0;
 
 int strcicmp(char const *a, char const *b)
