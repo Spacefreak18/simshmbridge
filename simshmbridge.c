@@ -8,6 +8,7 @@
 //#define DEBUG
 
 int pids[4];
+int go = 0;
 
 #ifdef ASSETTOCORSA
 #include "simapi/simapi/ac.h"
@@ -152,6 +153,23 @@ void hexDump(char *desc, void *addr, int len)
     printf("  %s\n", buff);
 }
 
+BOOL WINAPI CtrlHandler(DWORD fdwCtrlType)
+{
+    switch (fdwCtrlType)
+    {
+    case CTRL_C_EVENT:
+    case CTRL_CLOSE_EVENT:
+    case CTRL_BREAK_EVENT:
+    case CTRL_LOGOFF_EVENT:
+    case CTRL_SHUTDOWN_EVENT:
+        go = 1;
+        return TRUE;
+    default:
+        return FALSE;
+    }
+}
+
+
 #ifdef HELPERPROCESSFIRST
 int main(int argc, char** argv)
 {
@@ -249,8 +267,6 @@ int main(int argc, char** argv) {
         Sleep(3000);
     }
     CloseHandle(maph);
-    //maph = CreateFileMapping(INVALID_HANDLE_VALUE, NULL, FILE_MAP_READ, 0, sizeof(SharedMemory1), file1);
-    //fprintf(stderr, "Mapped first shared memory file, mapping any necessary remaining shared memory files.\n");
 
 
 #ifdef DEBUG
@@ -315,23 +331,23 @@ int main(int argc, char** argv) {
     }
 
     SetStdHandle(STD_INPUT_HANDLE, "CONIN$");
-    fprintf(stderr, "Mapped and sleeping forever Press Shift-E to stop ( may need to press more than once until it stops )\n");
-    int key = 0;
-    while(1)
-    {
-        if (_kbhit())
-        {
-            key =_getch();
+    SetConsoleCtrlHandler(CtrlHandler, TRUE);
 
-            if (key == 'E')
-              break;
-        }
+    fprintf(stderr, "Mapped and sleeping forever Press Ctrl-C to stop\n");
+    int key = 0;
+    while(go == 0)
+    {
+
+        Sleep(300);
+        continue;
     }
 
+    fprintf(stderr, "Closing child processes\n");
+    GenerateConsoleCtrlEvent(0, 0);
     for(int i = 0; i < numfiles; i++)
     {
-        CloseHandle(shmhandles[i]);
         TerminateProcess(pi[i].hProcess, 0);
+        CloseHandle(shmhandles[i]);
         CloseHandle(pi[i].hProcess);
         CloseHandle(pi[i].hThread);
     }
