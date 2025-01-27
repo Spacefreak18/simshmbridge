@@ -308,7 +308,8 @@ int main(int argc, char** argv) {
         free(ProcessString);
     }
 
-    fprintf(stderr, "Mapped and sleeping forever Press Shift-E to stop");
+    SetStdHandle(STD_INPUT_HANDLE, "CONIN$");
+    fprintf(stderr, "Mapped and sleeping forever Press Shift-E to stop\n");
     int key = 0;
     while(1)
     {
