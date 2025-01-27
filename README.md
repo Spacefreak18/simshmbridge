@@ -99,14 +99,36 @@ bridge - manually moves memory into Linux shared memory for Simulators that do n
 
 ## Basic Mapping Examples
 
-The best way is to run the wrapper from the Proton Launch Command.
-And in a separate terminal or tab start ./createsimshm.
-### Assetto Corsa
+### Assetto Corsa (with Method 1 in Launch Command)
+First in a separate terminal or tab start ./acshm (or simd).
+
+Start the game with a modified launch command like the following
 ```
-%command% & sleep 5 && ~/.steam/steam/steamapps/common/Proton\ 8.0/proton run ~/shmwrap/ac/acshmbridge.exe
+%command% & sleep 5 && ~/.steam/steam/steamapps/common/Proton\ 8.0/proton run ~/shmwrap/ac/acbridge.exe
 ```
 
-you can exit createsimshm by pressing "q" and simshmbridge.exe by pressing ctrl-c
+you can exit acshm by pressing "q" and acbridge.exe by pressing ctrl-c
+
+### Assetto Corsa (with Method 2)
+(look in the examples folder for a self contained script)
+First in a separate terminal or tab start ./acshm (or simd).
+
+```
+protontricks --no-runtime --background-wineserver -c "wine ./simshmbridge/assets/achandle.exe ./simshmbridge/assets/achandle" 244210
+```
+
+you can exit acshm by pressing "q" and achandle.exe by pressing ctrl-c
+
+### Automobilista (with Method 2)
+(look in the examples folder for a self contained shell script)
+First in a separate terminal or tab start ./pcars2shm (or simd).
+
+and in another terminal or tab run
+```
+protontricks --no-runtime --background-wineserver -c "wine ./simshmbridge/assets/pcars2handle.exe ./simshmbridge/assets/pcars2handle" 1066890
+```
+(as you can see, it's possible for simd to take care of all of this in the future)
+again, you can exit pcars2shm with "q" and pcars2handle.exe with ctrl-c
 
 ## Mapping from Linux Shared Memory back to Wine
 
