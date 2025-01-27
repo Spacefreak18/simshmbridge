@@ -108,10 +108,20 @@ First in a separate terminal or tab start ./acshm (or simd).
 
 Start the game with a modified launch command like the following
 ```
-%command% & sleep 5 && ~/.steam/steam/steamapps/common/Proton\ 8.0/proton run ~/shmwrap/ac/acbridge.exe
+%command% & sleep 5 && ~/.steam/steam/steamapps/common/Proton\ 8.0/proton run ~/git/simshmbridge/assets/acbridge.exe
 ```
 
 you can exit acshm by pressing "q" and acbridge.exe by pressing ctrl-c
+
+### Automobilista 2 (with Method 1 in Launch Command)
+First in a separate terminal or tab start ./acshm (or simd).
+
+Start the game with a modified launch command like the following
+```
+%command% & sleep 5 && ~/.steam/steam/steamapps/common/Proton\ 6.3/proton run ~/git/simshmbridge/assets/pcars2bridge.exe
+```
+
+you can exit pcars2shm by pressing "q" and pcars2bridge.exe by pressing ctrl-c
 
 ### Assetto Corsa (with Method 2)
 (look in the examples folder for a self contained script)
@@ -123,7 +133,7 @@ protontricks --no-runtime --background-wineserver -c "wine ./simshmbridge/assets
 
 you can exit acshm by pressing "q" and achandle.exe by pressing ctrl-c
 
-### Automobilista (with Method 2)
+### Automobilista 2 (with Method 2)
 (look in the examples folder for a self contained shell script)
 First in a separate terminal or tab start ./pcars2shm (or simd).
 
