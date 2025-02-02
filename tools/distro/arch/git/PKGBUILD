@@ -1,0 +1,33 @@
+# Maintainer: Paul Jones <paul@spacefreak18.xyz>
+_reponame=simshmbridge
+pkgname=simshmbridge
+pkgver=0.1.0
+pkgrel=1
+pkgdesc="Shared Memory Compatibility Programs For Various Racing Simulators"
+arch=('x86_64')
+url="https://github.com/spacefreak18/simshmbridge"
+license=('GPL3')
+_commit=12509e9709871afcb3ae264823b4a7d3c3b71bf7
+depends=(
+)
+makedepends=(
+  git
+)
+
+source=("git+https://github.com/spacefreak18/simshmbridge.git")
+
+sha256sums=(
+  'SKIP'
+)
+
+package() {
+  cd "$srcdir/$_reponame" || exit 1
+  git submodule sync --recursive
+  git submodule update --init --recursive
+  mkdir -p assets
+  make
+
+  mkdir -p "${pkgdir}/usr/bin/"
+  cp "$srcdir/$_reponame/assets/"* "${pkgdir}/usr/bin/"
+  install -D -m644 "$srcdir/$_reponame"/LICENSE.rst -t "${pkgdir}/usr/share/licenses/$_reponame"
+}
