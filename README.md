@@ -2,6 +2,8 @@
 
 Wrapper programs to map shared memory from Linux for access by Wine and Proton.
 
+## NOTICE: After fixing some bugs it should be possible to use Method 1 (*bridge.exe) for everything. Method 2 is just a fallback.
+
 ## FAQ
 
 ### Why is this necessary?
@@ -123,16 +125,6 @@ Start the game with a modified launch command like the following
 
 you can exit pcars2shm by pressing "q" and pcars2bridge.exe by pressing ctrl-c
 
-### Assetto Corsa (with Method 2)
-(look in the examples folder for a self contained script)
-First in a separate terminal or tab start ./acshm (or simd).
-
-```
-protontricks --no-runtime --background-wineserver -c "wine ./simshmbridge/assets/achandle.exe ./simshmbridge/assets/achandle" 244210
-```
-
-you can exit acshm by pressing "q" and achandle.exe by pressing ctrl-c
-
 ### Automobilista 2 (with Method 2)
 (look in the examples folder for a self contained shell script)
 First in a separate terminal or tab start ./pcars2shm (or simd).
@@ -157,9 +149,17 @@ export WINEARCH="win64"
 
 wine ~/shmwrap/ac/acs.exe
 ```
+
+
 make sure createsimshm is running and the shared memory files are in /dev/shm.
 then you can start crewchief however you are starting crewchief. One could even add this to a launcher, but you'd need separate launchers for each sim. Crewchief
-looks for certain executable names to know if the sim is running. To determine the name of the executable, I read the code [here](https://gitlab.com/mr_belowski/CrewChiefV4/-/blob/master/CrewChiefV4/GameDefinition.cs)
+looks for certain executable names to know if the sim is running. To determine the name of the executable, look up the game and the processName in the table [here](https://gitlab.com/mr_belowski/CrewChiefV4/-/blob/main/CrewChiefV4/GameDefinition.csv?ref_type=heads)
+
+
+for example, the game executable CrewChief looks for for some common sims are...
+acc == "AC2-Win64-Shipping.exe"
+automobilista2 == "AMS2AVX.exe"
+
 
 ## ToDo
  - Support more sims/programs
