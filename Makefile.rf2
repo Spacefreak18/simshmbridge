@@ -1,9 +1,11 @@
 all: assets/rf2bridge.exe
+debug: assets/rf2bridge.exe
 
 CC=gcc
 WINECC=x86_64-w64-mingw32-gcc
 CFLAGS=-DRFACTOR2 -DHELPERPROCESSFIRST -Wall -Os -g
 
+debug: CFLAGS += -DDEBUG -g
 
 assets/rf2bridge.exe: simshmbridge.c
 	$(WINECC) $< $(CFLAGS) -mconsole -o $@

@@ -5,10 +5,36 @@
 #include <string.h>
 #include <unistd.h>
 
-//#define DEBUG
+int go = 0;
+
+#ifdef DEBUG
+void hexDump(char *desc, void *addr, int len);
+#endif
+
+BOOL WINAPI CtrlHandler(DWORD fdwCtrlType)
+{
+    switch (fdwCtrlType)
+    {
+    case CTRL_C_EVENT:
+    case CTRL_CLOSE_EVENT:
+    case CTRL_BREAK_EVENT:
+    case CTRL_LOGOFF_EVENT:
+    case CTRL_SHUTDOWN_EVENT:
+        go = 1;
+        return TRUE;
+    default:
+        return FALSE;
+    }
+}
+
+
+
+
 
 int pids[4];
-int go = 0;
+/**************
+ * Game Variables
+ * ***********/
 
 #ifdef ASSETTOCORSA
 #include "simapi/simapi/ac.h"
@@ -21,10 +47,10 @@ LPCSTR file1 = AC_PHYSICS_FILE;
 int numfiles = 4;
 const char* files[] =
 {
-    AC_PHYSICS_FILE,
     AC_STATIC_FILE,
     AC_GRAPHIC_FILE,
-    AC_CREWCHIEF_FILE
+    AC_CREWCHIEF_FILE,
+    AC_PHYSICS_FILE
 };
 
 
@@ -61,9 +87,16 @@ size_t getmemfilesize(const char* filename)
 #include "simapi/simapi/rf2.h"
 #include "simapi/include/rf2data.h"
 
+typedef struct rF2Scoring SharedMemory1;
+
 LPCSTR filefind = "$rFactor2*";
 
-typedef struct rF2Scoring SharedMemory1;
+int numfiles = 1;
+const char* files[] =
+{
+    RF2_TELEMETRY_FILE,
+    RF2_SCORING_FILE
+};
 
 size_t getmemfilesize(const char* filename)
 {
@@ -105,68 +138,14 @@ size_t getmemfilesize(const char* filename)
 }
 #endif
 
-void hexDump(char *desc, void *addr, int len)
-{
-    int i;
-    unsigned char buff[17];
-    unsigned char *pc = (unsigned char*)addr;
 
-    // Output description if given.
-    if (desc != NULL)
-        printf ("%s:\n", desc);
 
-    // Process every byte in the data.
-    for (i = 0; i < len; i++) {
-        // Multiple of 16 means new line (with line offset).
 
-        if ((i % 16) == 0) {
-            // Just don't print ASCII for the zeroth line.
-            if (i != 0)
-                printf("  %s\n", buff);
 
-            // Output the offset.
-            printf("  %04x ", i);
-        }
-
-        // Now the hex code for the specific character.
-        printf(" %02x", pc[i]);
-
-        // And store a printable ASCII character for later.
-        if ((pc[i] < 0x20) || (pc[i] > 0x7e)) {
-            buff[i % 16] = '.';
-        } else {
-            buff[i % 16] = pc[i];
-        }
-
-        buff[(i % 16) + 1] = '\0';
-    }
-
-    // Pad out last line if not exactly 16 characters.
-    while ((i % 16) != 0) {
-        printf("   ");
-        i++;
-    }
-
-    // And print the final ASCII bit.
-    printf("  %s\n", buff);
-}
-
-BOOL WINAPI CtrlHandler(DWORD fdwCtrlType)
-{
-    switch (fdwCtrlType)
-    {
-    case CTRL_C_EVENT:
-    case CTRL_CLOSE_EVENT:
-    case CTRL_BREAK_EVENT:
-    case CTRL_LOGOFF_EVENT:
-    case CTRL_SHUTDOWN_EVENT:
-        go = 1;
-        return TRUE;
-    default:
-        return FALSE;
-    }
-}
-
+/*************************
+ * Helper Process First
+ *
+ ************************/
 
 #ifdef HELPERPROCESSFIRST
 int main(int argc, char** argv)
@@ -191,58 +170,87 @@ int main(int argc, char** argv)
         return 1;
     }
 
-    void* pMem;
-    void* pMem2;
-    HANDLE maph;
-    HANDLE mapha;
-    SharedMemory1* a;
-    SharedMemory1* b;
+    unsigned char* pMem = NULL;
+    HANDLE maph = NULL;
+    HANDLE shmhandles[numfiles];
+    HANDLE fdhandles[numfiles];
+    int i = 0;;
     do
     {
-        HANDLE fd = CreateFile(fdata.cFileName, GENERIC_READ|GENERIC_WRITE|GENERIC_EXECUTE, FILE_SHARE_READ|FILE_SHARE_WRITE,
+        fdhandles[i] = CreateFile(fdata.cFileName, GENERIC_READ|GENERIC_WRITE|GENERIC_EXECUTE, FILE_SHARE_READ|FILE_SHARE_WRITE,
                 NULL, OPEN_EXISTING, FILE_ATTRIBUTE_NORMAL, NULL);
 
-        if (fd == INVALID_HANDLE_VALUE)
+        if (fdhandles[i] == INVALID_HANDLE_VALUE)
         {
             printf("warning: could not open %s: %s\n", fdata.cFileName, strerror(GetLastError()));
             continue;
         }
         int filesize = getmemfilesize(fdata.cFileName);
 
-        maph = CreateFileMapping(fd, NULL, PAGE_EXECUTE_READWRITE, 0, filesize, fdata.cFileName);
+        maph = CreateFileMapping(fdhandles[i], NULL, PAGE_EXECUTE_READWRITE, 0, filesize, fdata.cFileName);
         if (maph == NULL)
         {
             printf("warning: could not create mapping for %s: %s\n", fdata.cFileName, strerror(GetLastError()));
-            CloseHandle(fd);
+            CloseHandle(fdhandles[i]);
             continue;
         }
+        shmhandles[i] = maph;;
         // TODO: save all these handles to close them later
         printf("Bridged /dev/shm/%s of %i size to Win32 named mapping \"%s\"\n", fdata.cFileName, filesize, fdata.cFileName);
 
-#ifdef DEBUG
-        pMem = (unsigned char*)MapViewOfFile(maph, FILE_MAP_READ, 0, 0, filesize);
-#endif
+
+        i++;
     }
     while (FindNextFile(ffhandle, &fdata));
-    printf("Done! Sleeping forever to keep objects alive, press Ctrl-C to stop\n");
+    printf("Done! Sleeping forever to keep objects alive, press Shift-E to stop\n");
 
-#ifndef DEBUG
-    while(go == 0)
-    {
-        sleep(300);
-        continue;
-#endif
+
 #ifdef DEBUG
-    for (;;)
-    {
-        a = malloc(sizeof(SharedMemory1));
-        hexDump( NULL, a, sizeof(SharedMemory1));
+    pMem = (unsigned char*)MapViewOfFile(maph, FILE_MAP_READ, 0, 0, getmemfilesize(files[0]));
 #endif
+
+
+    while(1)
+    {
+
+#ifdef DEBUG
+        hexDump( "MEM: ", pMem, sizeof(SharedMemory1));
+#endif
+        if(kbhit()) {
+            char ch = getch();
+            if(ch == 'E')
+            {
+                break;
+            }
+        }
+        continue;
     }
-    CloseHandle(maph);
+
+
+#ifdef DEBUG
+        CloseHandle(pMem);
+#endif
+
+    for(int j = 0; j < numfiles; j++)
+    {
+        // if there is some kind of error these will either not exist or already be closed, if you're nitpicking
+        CloseHandle(shmhandles[j]);
+        CloseHandle(fdhandles[j]);
+    }
     return 0;
 }
 #endif
+
+
+
+
+
+
+
+/*************************
+ * Helper Process Second
+ *
+ ************************/
 
 #ifdef HELPERPROCESSSECOND
 int main(int argc, char** argv) {
@@ -268,37 +276,15 @@ int main(int argc, char** argv) {
     SharedMemory1* b = malloc(sizeof(SharedMemory1));
     b = (SharedMemory1*)mapfb;
 
-    //fprintf(stderr, "buf contains: %d\n", b->mNumVehicles);
-    //fprintf(stderr, "buf contains: %d\n", b->mVehicles[0].mLapNumber);
-    //fprintf(stderr, "buf contains: %lf\n", b->mVehicles[0].mLocalVel.x);
-    //fprintf(stderr, "buf contains: %lf\n", b->mVehicles[0].mLocalVel.y);
-    //fprintf(stderr, "buf contains: %lf\n", b->mVehicles[0].mLocalVel.z);
-    //fprintf(stderr, "buf contains: %d\n", b->mVehicles[0].mGear);
-    //fprintf(stderr, "buf contains: %lf\n", b->mVehicles[0].mEngineRPM);
 
-    fprintf(stderr, "buf contains: %i\n", b->mVersion);
-    fprintf(stderr, "buf contains: %i\n", b->mBuildVersionNumber);
-    fprintf(stderr, "buf contains: %i\n", b->mGameState);
-    fprintf(stderr, "buf contains: %i\n", b->mSessionState);
-    fprintf(stderr, "buf contains: %i\n", b->mRaceState);
+    //fprintf(stderr, "buf contains: %i\n", b->mVersion);
+    //fprintf(stderr, "buf contains: %i\n", b->mBuildVersionNumber);
+    //fprintf(stderr, "buf contains: %i\n", b->mGameState);
+    //fprintf(stderr, "buf contains: %i\n", b->mSessionState);
+    //fprintf(stderr, "buf contains: %i\n", b->mRaceState);
 
     FILE *outfile;
 
-    //outfile = fopen ("/home/racerx/telemetry.dat", "w");
-    //if (outfile == NULL)
-    //{
-    //    fprintf(stderr, "\nError opened file\n");
-    //    exit (1);
-    //}
-
-    //fwrite (b, sizeof(SharedMemory1), 1, outfile);
-
-    //if(fwrite != 0)
-    //    printf("contents to file written successfully !\n");
-    //else
-    //    printf("error writing file !\n");
-
-    //fclose (outfile);
 #endif
 
 
@@ -345,5 +331,65 @@ int main(int argc, char** argv) {
         CloseHandle(pi[i].hThread);
     }
     return 0;
+}
+#endif
+
+
+
+
+
+
+
+
+/*********************
+ * DEBUG
+ * *******************/
+
+
+#ifdef DEBUG
+void hexDump(char *desc, void *addr, int len)
+{
+    int i;
+    unsigned char buff[17];
+    unsigned char *pc = (unsigned char*)addr;
+
+    // Output description if given.
+    if (desc != NULL)
+        printf ("%s:\n", desc);
+
+    // Process every byte in the data.
+    for (i = 0; i < len; i++) {
+        // Multiple of 16 means new line (with line offset).
+
+        if ((i % 16) == 0) {
+            // Just don't print ASCII for the zeroth line.
+            if (i != 0)
+                printf("  %s\n", buff);
+
+            // Output the offset.
+            printf("  %04x ", i);
+        }
+
+        // Now the hex code for the specific character.
+        printf(" %02x", pc[i]);
+
+        // And store a printable ASCII character for later.
+        if ((pc[i] < 0x20) || (pc[i] > 0x7e)) {
+            buff[i % 16] = '.';
+        } else {
+            buff[i % 16] = pc[i];
+        }
+
+        buff[(i % 16) + 1] = '\0';
+    }
+
+    // Pad out last line if not exactly 16 characters.
+    while ((i % 16) != 0) {
+        printf("   ");
+        i++;
+    }
+
+    // And print the final ASCII bit.
+    printf("  %s\n", buff);
 }
 #endif
