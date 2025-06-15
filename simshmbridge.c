@@ -89,9 +89,9 @@ size_t getmemfilesize(const char* filename)
 
 typedef struct rF2Scoring SharedMemory1;
 
-LPCSTR filefind = "$rFactor2*";
+LPCSTR filefind = "$rFactor2SMMP_*";
 
-int numfiles = 1;
+int numfiles = 13;
 const char* files[] =
 {
     RF2_TELEMETRY_FILE,
@@ -100,15 +100,16 @@ const char* files[] =
 
 size_t getmemfilesize(const char* filename)
 {
-    if(strcmp(filename, RF2_TELEMETRY_FILE) == 0)
-    {
-        return sizeof(struct rF2Telemetry);
-    }
-    if(strcmp(filename, RF2_SCORING_FILE) == 0)
-    {
-        return sizeof(struct rF2Scoring);
-    }
-    return 4096;
+    //if(strcmp(filename, RF2_TELEMETRY_FILE) == 0)
+    //{
+    //    return sizeof(struct rF2Telemetry);
+    //}
+    //if(strcmp(filename, RF2_SCORING_FILE) == 0)
+    //{
+    //    return sizeof(struct rF2Scoring);
+    //}
+    //return 4096;
+    return 250000;
 }
 #endif
 
