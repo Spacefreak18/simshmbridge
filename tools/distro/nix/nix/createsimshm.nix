@@ -1,5 +1,5 @@
 { version
-, simdef
+, shortname
 , stdenv
 ,
 }:
@@ -13,7 +13,7 @@ stdenv.mkDerivation {
   src = ./../../../..;
 
   buildPhase = ''
-    make -f Makefile.${simdef} assets/${simdef}shm
+    make -f Makefile.${shortname} assets/${shortname}shm
   '';
 
   installPhase = ''

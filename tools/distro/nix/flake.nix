@@ -6,37 +6,59 @@
     self.submodules = true;
   };
 
-  outputs =
-    { nixpkgs, ... }:
+  outputs = { nixpkgs, ... }:
     let
       system = "x86_64-linux";
-
       pkgs = nixpkgs.legacyPackages.${system};
       inherit (pkgs) lib;
 
       version = "0.1.0";
 
       supportedGames = {
-        assettocorsa = "ac";
-      };
-
-      mapGameAttrs = scope: name: simdef: {
-        ${name} = scope.callPackage ./nix/${name}.nix { };
-
-        "simshmbridge-${name}" = scope.callPackage ./nix/simshmbridge.nix {
-          inherit version simdef;
+        assettocorsa = {
+          shortname = "ac";
+          createsimshm = true;
         };
-
-        "createsimshm-${name}" = scope.callPackage ./nix/createsimshm.nix {
-          inherit version simdef;
+        projectcars2 = {
+          shortname = "pcars2";
+          createsimshm = true;
+        };
+        rfactor2 = {
+          shortname = "rf2";
+          createsimshm = false;
         };
       };
-
-      flakeScope = pkgs.lib.makeScope pkgs.newScope (
-        scope: (lib.mergeAttrsList (lib.mapAttrsToList (mapGameAttrs scope) supportedGames))
-      );
+      gamePackages = lib.mapAttrs
+        (name: simdef:
+          let
+            simshmbridge = pkgs.callPackage ./nix/simshmbridge.nix {
+              inherit version;
+              shortname = simdef.shortname;
+            };
+            createsimshm = pkgs.callPackage ./nix/createsimshm.nix {
+              inherit version;
+              shortname = simdef.shortname;
+            };
+          in
+          {
+            "simshmbridge-${name}" = simshmbridge;
+          } // lib.optionalAttrs simdef.createsimshm {
+            "createsimshm-${name}" = createsimshm;
+          } // {
+            "${name}" = pkgs.symlinkJoin {
+              name = "simshm-${name}";
+              paths = [ simshmbridge ] ++ lib.optionals simdef.createsimshm [ createsimshm ];
+            };
+          }
+        )
+        supportedGames;
+      mergedGames = lib.foldlAttrs (acc: _: value: acc // value) { } gamePackages;
+      allGames = pkgs.symlinkJoin {
+        name = "simshm-all";
+        paths = lib.attrValues (lib.getAttrs (builtins.attrNames supportedGames) mergedGames);
+      };
     in
     {
-      packages.${system} = flakeScope.packages flakeScope;
+      packages.${system} = mergedGames // { all = allGames; };
     };
 }

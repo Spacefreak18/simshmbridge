@@ -1,5 +1,5 @@
 { version
-, simdef
+, shortname
 , pkgsCross
 ,
 }:
@@ -10,7 +10,7 @@ pkgsCross.mingwW64.stdenv.mkDerivation {
   src = ./../../../..;
 
   buildPhase = ''
-    make -f Makefile.${simdef} assets/${simdef}bridge.exe
+    make -f Makefile.${shortname} assets/${shortname}bridge.exe
   '';
 
   installPhase = ''
