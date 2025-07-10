@@ -1,7 +1,7 @@
-{
-  version,
-  simdef,
-  stdenv,
+{ version
+, simdef
+, stdenv
+,
 }:
 stdenv.mkDerivation {
   name = "createsimshm";

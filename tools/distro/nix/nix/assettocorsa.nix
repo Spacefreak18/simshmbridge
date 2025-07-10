@@ -1,7 +1,7 @@
-{
-  buildEnv,
-  simshmbridge-assettocorsa,
-  createsimshm-assettocorsa,
+{ buildEnv
+, simshmbridge-assettocorsa
+, createsimshm-assettocorsa
+,
 }:
 buildEnv {
   name = "simshm-assettocorsa";

@@ -1,7 +1,7 @@
-{
-  version,
-  simdef,
-  pkgsCross,
+{ version
+, simdef
+, pkgsCross
+,
 }:
 pkgsCross.mingwW64.stdenv.mkDerivation {
   name = "simshmbridge";
