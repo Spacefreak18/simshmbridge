@@ -17,7 +17,7 @@
       version = "0.1.0";
 
       supportedGames = {
-        assettocorsa = "ASSETTOCORSA";
+        assettocorsa = "ac";
       };
 
       mapGameAttrs = scope: name: simdef: {

@@ -10,10 +10,10 @@ stdenv.mkDerivation {
   buildInputs = [ ];
   nativeBuildInputs = [ ];
 
-  src = ./..;
+  src = ./../../../..;
 
   buildPhase = ''
-    make assets/createsimshm CFLAGS=-D${simdef}
+    make -f Makefile.${simdef} assets/${simdef}shm
   '';
 
   installPhase = ''
