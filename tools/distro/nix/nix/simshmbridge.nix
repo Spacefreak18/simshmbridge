@@ -1,7 +1,6 @@
 {
   version,
   simdef,
-  simapi,
   pkgsCross,
 }:
 pkgsCross.mingw32.stdenv.mkDerivation {
@@ -9,10 +8,6 @@ pkgsCross.mingw32.stdenv.mkDerivation {
   inherit version;
 
   src = ./..;
-
-  configurePhase = ''
-    ln -s ${simapi} simapi
-  '';
 
   buildPhase = ''
     make assets/simshmbridge.exe CFLAGS=-D${simdef}

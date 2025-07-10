@@ -1,7 +1,6 @@
 {
   version,
   simdef,
-  simapi,
   stdenv,
 }:
 stdenv.mkDerivation {
@@ -12,10 +11,6 @@ stdenv.mkDerivation {
   nativeBuildInputs = [ ];
 
   src = ./..;
-
-  configurePhase = ''
-    ln -s ${simapi} simapi
-  '';
 
   buildPhase = ''
     make assets/createsimshm CFLAGS=-D${simdef}

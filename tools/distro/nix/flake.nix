@@ -3,6 +3,7 @@
 
   inputs = {
     nixpkgs.url = "github:NixOS/nixpkgs/nixos-unstable";
+    self.submodules = true;
   };
 
   outputs =
@@ -19,10 +20,6 @@
         assettocorsa = "ASSETTOCORSA";
       };
 
-      corePackages = scope: {
-        simapi = scope.callPackage ./nix/simapi.nix { };
-      };
-
       mapGameAttrs = scope: name: simdef: {
         ${name} = scope.callPackage ./nix/${name}.nix { };
 
@@ -36,9 +33,7 @@
       };
 
       flakeScope = pkgs.lib.makeScope pkgs.newScope (
-        scope:
-        (corePackages scope)
-        // (lib.mergeAttrsList (lib.mapAttrsToList (mapGameAttrs scope) supportedGames))
+        scope: (lib.mergeAttrsList (lib.mapAttrsToList (mapGameAttrs scope) supportedGames))
       );
     in
     {
