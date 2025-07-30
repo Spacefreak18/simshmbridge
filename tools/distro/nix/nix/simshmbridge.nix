@@ -1,21 +1,16 @@
-{
-  version,
-  simdef,
-  simapi,
-  pkgsCross,
+{ version
+, shortname
+, pkgsCross
+,
 }:
-pkgsCross.mingw32.stdenv.mkDerivation {
+pkgsCross.mingwW64.stdenv.mkDerivation {
   name = "simshmbridge";
   inherit version;
 
-  src = ./..;
-
-  configurePhase = ''
-    ln -s ${simapi} simapi
-  '';
+  src = ./../../../..;
 
   buildPhase = ''
-    make assets/simshmbridge.exe CFLAGS=-D${simdef}
+    make -f Makefile.${shortname} assets/${shortname}bridge.exe
   '';
 
   installPhase = ''
