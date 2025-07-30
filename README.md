@@ -2,8 +2,6 @@
 
 Wrapper programs to map shared memory from Linux for access by Wine and Proton.
 
-## NOTICE: After fixing some bugs it should be possible to use Method 1 (*bridge.exe) for everything. Method 2 is just a fallback.
-
 ## FAQ
 
 ### Why is this necessary?
@@ -24,17 +22,13 @@ udp will trash your frame rate. Some games only support udp, and support is bein
 
 ### Alright, then how does this tool work?
 
-There are two methods of acheiving this bridging.
-
-Method 1: Run a helper process inside the target wine/proton prefix that creates the memory mapped file before the game does, and we give it the
-unix space location. [poljar](https://github.com/poljar/shm-bridge) has a great explanation with a graphic of what exactly is happening.
-
-Method 2: If method 1 does not work, method 2 should always work, though it is slower and more cumbersome. It relies on the fact that child processes can [inherit handles](https://learn.microsoft.com/en-us/windows/win32/procthread/inheritance) including memory mapped files
-from their parent process.
-
-In both situations ( although not strictly necessary in method 1 especially ), I start a process on the unix side (*shm for example acshm) which
+First, start a process on the unix side (*shm for example acshm) which
 creates the shared memory file first so it is controlled natively on the unix side first, and can be managed appropriately. So it is necessary
 to start *shm before anything else.
+
+Run a helper process inside the target wine/proton prefix that creates the memory mapped file before the game does, and we give it the
+unix space location. [poljar](https://github.com/poljar/shm-bridge) has a great explanation with a graphic of what exactly is happening.
+
 
 ### Cool, how do I use this?
 
@@ -42,9 +36,7 @@ Compile, follow the example, and add the utilities to your launch command or sta
 
 ### How do I close these cleanly?
 
-Ctrl-C will close these cleanly. If you don't have the terminal available, send ```kill -2 $(pid)``` to the parent process. The one caveat is that
-it's tough to close the child processes in method 2 cleanly. They will close, just I don't have the ability to catch a signal and release things. Which
-doesn't really matter in this situation, all it does have file descriptors open which will be cleaned up when the process anyway.
+Shift-E will close these cleanly. If you don't have the terminal available, send ```kill -2 $(pid)``` to the parent process.
 
 ### Sounds a little cumbersome, do you have plans to make it easier?
 
@@ -66,9 +58,7 @@ a lot of time debugging and making all this better.
 ### One last overview?
 
 + *shm - creates memory mapped files in unixspace
-+ *bridge.exe - method 1, opens memory mapped file in windows space ahead of game, backed by unix, so we can have access.
-+ *handle.exe - method 2, opens memory mapped file in windows space after the game, forwards the handle to the memory mapped file(s) to helper process 2
-+ *handle - method 2, process 2, writes from the received file descriptor from windows space, into the corresponding memory mapped file in unix space.
++ *bridge.exe - opens memory mapped file in windows space ahead of game, backed by unix, so we can have access.
 
 (the asterisk here is a place holder for the corresponding supported sim, one of "ac", "pcars2", "rf2")
 
@@ -105,7 +95,22 @@ bridge - manually moves memory into Linux shared memory for Simulators that do n
 
 ## Basic Mapping Examples
 
-### Assetto Corsa (with Method 1 in Launch Command)
+### Assetto Corsa
+First in a separate terminal or tab start ./acshm (or simd).
+
+Then run acbridge.exe in the same wine prefix as Assetto Corsa (244210) (and assuming GE Proton 9.4)
+```
+WINEFSYNC=1 WINEPREFIX=/home/$USER/.steam/steam/steamapps/compatdata/244210/pfx /home/$USER/.steam/root/compatibilitytools.d/GE-Proton9-4/files/bin/wine ~/git/simshmbridge/assets/acbridge.exe
+```
+the same result can be achieved with using protontricks to start acbridge.exe
+```
+PROTON_VERSION="GE-Proton9-4" protontricks --background-wineserver --no-runtime -c "wine ~/git/simshmbridge/assets/acbridge.exe" 244210
+```
+
+
+you can exit acshm by pressing "q" and acbridge.exe by pressing shift-E
+
+### Assetto Corsa (in Launch Command)
 First in a separate terminal or tab start ./acshm (or simd).
 
 Start the game with a modified launch command like the following
@@ -113,9 +118,11 @@ Start the game with a modified launch command like the following
 %command% & sleep 5 && ~/.steam/steam/steamapps/common/Proton\ 8.0/proton run ~/git/simshmbridge/assets/acbridge.exe
 ```
 
-you can exit acshm by pressing "q" and acbridge.exe by pressing ctrl-c
+you can exit acshm by pressing "q" and acbridge.exe by pressing shift-E
 
-### Automobilista 2 (with Method 1 in Launch Command)
+###
+
+### Automobilista 2 (in Launch Command)
 First in a separate terminal or tab start ./acshm (or simd).
 
 Start the game with a modified launch command like the following
@@ -123,18 +130,8 @@ Start the game with a modified launch command like the following
 %command% & sleep 5 && ~/.steam/steam/steamapps/common/Proton\ 6.3/proton run ~/git/simshmbridge/assets/pcars2bridge.exe
 ```
 
-you can exit pcars2shm by pressing "q" and pcars2bridge.exe by pressing ctrl-c
+you can exit pcars2shm by pressing "q" and pcars2bridge.exe by pressing shift-E
 
-### Automobilista 2 (with Method 2)
-(look in the examples folder for a self contained shell script)
-First in a separate terminal or tab start ./pcars2shm (or simd).
-
-and in another terminal or tab run
-```
-protontricks --no-runtime --background-wineserver -c "wine ./simshmbridge/assets/pcars2handle.exe ./simshmbridge/assets/pcars2handle" 1066890
-```
-(as you can see, it's possible for simd to take care of all of this in the future)
-again, you can exit pcars2shm with "q" and pcars2handle.exe with ctrl-c
 
 ## Mapping from Linux Shared Memory back to Wine
 
