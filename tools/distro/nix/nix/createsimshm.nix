@@ -1,8 +1,7 @@
-{
-  version,
-  simdef,
-  simapi,
-  stdenv,
+{ version
+, shortname
+, stdenv
+,
 }:
 stdenv.mkDerivation {
   name = "createsimshm";
@@ -11,14 +10,10 @@ stdenv.mkDerivation {
   buildInputs = [ ];
   nativeBuildInputs = [ ];
 
-  src = ./..;
-
-  configurePhase = ''
-    ln -s ${simapi} simapi
-  '';
+  src = ./../../../..;
 
   buildPhase = ''
-    make assets/createsimshm CFLAGS=-D${simdef}
+    make -f Makefile.${shortname} assets/${shortname}shm
   '';
 
   installPhase = ''
