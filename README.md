@@ -76,6 +76,8 @@ This project is used by my Monocoque project which is a device manager for Simul
 git submodule sync --recursive
 git submodule update --init --recursive
 ```
+`mingw-gcc` is another build requirement. The provinding package's name can vary depending on your distribution of choice. Pacman for example uses `mingw-w64-gcc` while you can install it with apt as `gcc-mingw-w64`.
+
 ### Compile All
 ```
 make clean; make
