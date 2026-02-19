@@ -1,0 +1,25 @@
+all: assets/r3eshm assets/r3ehandle assets/r3ehandle.exe assets/r3ebridge.exe
+debug: assets/r3eshm assets/r3ehandle assets/r3ehandle.exe assets/r3ebridge.exe
+
+CC=gcc
+WINECC=x86_64-w64-mingw32-gcc
+CFLAGS=-DRACEROOM -Wall -Os -g
+
+debug: CFLAGS += -DDEBUG -g
+
+assets/r3eshm: createsimshm.c
+	$(CC) $< $(CFLAGS) -o $@
+
+assets/r3ehandle: bridge.c
+	$(CC) $< $(CFLAGS) -o $@
+
+assets/r3ehandle.exe: simshmbridge.c
+	$(WINECC) $< $(CFLAGS) -DHELPERPROCESSSECOND -mconsole -o $@
+
+assets/r3ebridge.exe: simshmbridge.c
+	$(WINECC) $< $(CFLAGS) -DHELPERPROCESSFIRST -mconsole -o $@
+
+clean:
+	rm -f assets/r3eshm assets/r3ehandle assets/r3ehandle.exe assets/r3ebridge.exe
+
+# vim: syntax=make ts=4 sw=4 sts=4 sr noet

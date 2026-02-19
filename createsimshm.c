@@ -26,6 +26,10 @@
 #include "simapi/include/pcars2data.h"
 //#include "simapi/simmap/mappcars2data.h"
 #endif
+#ifdef RACEROOM
+#include "simapi/simapi/r3edef.h"
+#include "simapi/include/r3e.h"
+#endif
 
 #define DEFAULT_UPDATE_RATE      60.0
 
@@ -71,6 +75,15 @@ int main(int argc, char* argv[])
     char* memfile1 = PCARS2_FILE;
 
     int datasize1 = PCARS2_SIZE;
+
+#define MEMFILECNT1
+
+#endif
+#ifdef RACEROOM
+
+    char* memfile1 = R3E_FILE;
+
+    int datasize1 = R3E_SIZE;
 
 #define MEMFILECNT1
 

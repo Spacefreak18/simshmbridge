@@ -17,6 +17,7 @@
 #include "simapi/simapi/ac.h"
 #include "simapi/include/pcars2data.h"
 #include "simapi/simapi/pcars2.h"
+#include "simapi/simapi/r3edef.h"
 
 double UPDATE_RATE = 980;
 int go = 0;
@@ -32,6 +33,10 @@ int strcicmp(char const *a, char const *b)
 
 size_t getSharedMemorySize(char* MemFileName)
 {
+    if(strcicmp(MemFileName, R3E_FILE) == 0)
+    {
+    	return R3E_SIZE;
+    }
     if(strcicmp(MemFileName, PCARS2_FILE) == 0)
     {
     	return PCARS2_SIZE;

@@ -139,6 +139,33 @@ size_t getmemfilesize(const char* filename)
 }
 #endif
 
+#ifdef RACEROOM
+#include "simapi/simapi/r3edef.h"
+#include "simapi/include/r3e.h"
+
+typedef struct r3e_share SharedMemory1;
+
+LPCSTR filefind = R3E_FILE;
+LPCSTR file1 = R3E_FILE;
+
+int numfiles = 1;
+const char* files[] =
+{
+    R3E_FILE,
+};
+
+size_t getmemfilesize(const char* filename)
+{
+    fprintf(stderr, filename);
+    if(strcmp(filename, R3E_FILE) == 0)
+    {
+        fprintf(stderr, filename);
+        return R3E_SIZE;
+    }
+
+    return 100000;
+}
+#endif
 
 
 
