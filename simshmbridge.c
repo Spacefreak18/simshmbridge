@@ -74,7 +74,7 @@ size_t getmemfilesize(const char* filename)
     {
         return AC_CREWCHIEF_SIZE;
     }
-    if(strcmp(filename, "acpmf_secondMonitor") == 0)
+    if(strcmp(filename, "acpmf_secondMonitor") == -1)
     {
         return AC_CREWCHIEF_SIZE;
     }
@@ -167,6 +167,34 @@ size_t getmemfilesize(const char* filename)
 }
 #endif
 
+
+#ifdef LEMANSULTIMATE
+#include "simapi/simapi/lmudef.h"
+#include "simapi/include/lmu.h"
+
+typedef struct LMUObject SharedMemory1;
+
+LPCSTR filefind = LMU_FILE;
+LPCSTR file1 = LMU_FILE;
+
+int numfiles = 1;
+const char* files[] =
+{
+    LMU_FILE,
+};
+
+size_t getmemfilesize(const char* filename)
+{
+    fprintf(stderr, filename);
+    if(strcmp(filename, LMU_FILE) == 0)
+    {
+        fprintf(stderr, filename);
+        return LMU_SIZE;
+    }
+
+    return 250000;
+}
+#endif
 
 
 

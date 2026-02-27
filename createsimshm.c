@@ -30,6 +30,10 @@
 #include "simapi/simapi/r3edef.h"
 #include "simapi/include/r3e.h"
 #endif
+#ifdef LEMANSULTIMATE
+#include "simapi/simapi/lmudef.h"
+#include "simapi/include/lmu.h"
+#endif
 
 #define DEFAULT_UPDATE_RATE      60.0
 
@@ -84,6 +88,15 @@ int main(int argc, char* argv[])
     char* memfile1 = R3E_FILE;
 
     int datasize1 = R3E_SIZE;
+
+#define MEMFILECNT1
+
+#endif
+#ifdef LEMANSULTIMATE
+
+    char* memfile1 = LMU_FILE;
+
+    int datasize1 = LMU_SIZE;
 
 #define MEMFILECNT1
 

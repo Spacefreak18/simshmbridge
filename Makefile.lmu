@@ -1,0 +1,25 @@
+all: assets/lmushm assets/lmuhandle assets/lmuhandle.exe assets/lmubridge.exe
+debug: assets/lmushm assets/lmuhandle assets/lmuhandle.exe assets/lmubridge.exe
+
+CC=gcc
+WINECC=x86_64-w64-mingw32-gcc
+CFLAGS=-DLEMANSULTIMATE -Wall -Os -g
+
+debug: CFLAGS += -DDEBUG -g
+
+assets/lmushm: createsimshm.c
+	$(CC) $< $(CFLAGS) -o $@
+
+assets/lmuhandle: bridge.c
+	$(CC) $< $(CFLAGS) -o $@
+
+assets/lmuhandle.exe: simshmbridge.c
+	$(WINECC) $< $(CFLAGS) -DHELPERPROCESSSECOND -mconsole -o $@
+
+assets/lmubridge.exe: simshmbridge.c
+	$(WINECC) $< $(CFLAGS) -DHELPERPROCESSFIRST -mconsole -o $@
+
+clean:
+	rm -f assets/lmushm assets/lmuhandle assets/lmuhandle.exe assets/lmubridge.exe
+
+# vim: syntax=make ts=4 sw=4 sts=4 sr noet
