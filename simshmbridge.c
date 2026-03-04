@@ -192,7 +192,7 @@ size_t getmemfilesize(const char* filename)
         return LMU_SIZE;
     }
 
-    return 250000;
+    return 505000;
 }
 #endif
 

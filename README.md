@@ -134,6 +134,16 @@ Start the game with a modified launch command like the following
 
 you can exit pcars2shm by pressing "q" and pcars2bridge.exe by pressing shift-E
 
+### LeMans Ultimate (in Launch Command)
+First in a separate terminal or tab start ./lmushm (or simd).
+
+Start the game with a modified launch command like the following
+```
+%command% & sleep 5 && ~/path/to/proton/running/your/game run ~/git/simshmbridge/assets/lmubridge.exe
+```
+
+you can exit lmushm by pressing "q" and lmubridge.exe by pressing shift-E
+
 
 ## Mapping from Linux Shared Memory back to Wine
 
