@@ -357,11 +357,11 @@ int main(int argc, char** argv) {
         ZeroMemory(&pi[i], sizeof(PROCESS_INFORMATION));
         size_t size = snprintf(NULL, 0, "%s %s", argv[1], files[i]);
         char* ProcessString = malloc(size + 1);
-        sprintf(ProcessString, "%s %s", argv[1], files[i]);
+        snprintf(ProcessString, size + 1, "%s %s", argv[1], files[i]);
         SetStdHandle(STD_INPUT_HANDLE, maph);
         si.hStdInput = maph;
         shmhandles[i] = maph;
-        CreateProcess(NULL, ProcessString, NULL, NULL, TRUE, 0, NULL, NULL, &si, &pi[i]);
+        CreateProcess(argv[1], ProcessString, NULL, NULL, TRUE, 0, NULL, NULL, &si, &pi[i]);
         fprintf(stderr, "started process %s at pid %li\n", ProcessString, pi[i].dwProcessId);
         free(ProcessString);
     }
