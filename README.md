@@ -67,6 +67,10 @@ a lot of time debugging and making all this better.
 They do, but rf2bridge.exe could still be useful if one wanted to map the shared memory from unix space back into a wine space that had a program such as
 CrewChief running.
 
+## Quickstart
+
+To start using this you can just clone this repository and run `./install.sh`. This will install needed files to /opt/simshmbridge and provide you with the needed isntructions to use it.
+
 ## Compilation
 
 ### Prerequisits
