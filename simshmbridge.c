@@ -234,7 +234,7 @@ int main(int argc, char** argv)
     int i = 0;;
     do
     {
-        fdhandles[i] = CreateFile(fdata.cFileName, GENERIC_READ|GENERIC_WRITE|GENERIC_EXECUTE, FILE_SHARE_READ|FILE_SHARE_WRITE,
+        fdhandles[i] = CreateFile(fdata.cFileName, GENERIC_READ|GENERIC_WRITE, FILE_SHARE_READ|FILE_SHARE_WRITE,
                 NULL, OPEN_EXISTING, FILE_ATTRIBUTE_NORMAL, NULL);
 
         if (fdhandles[i] == INVALID_HANDLE_VALUE)
@@ -244,7 +244,7 @@ int main(int argc, char** argv)
         }
         int filesize = getmemfilesize(fdata.cFileName);
 
-        maph = CreateFileMapping(fdhandles[i], NULL, PAGE_EXECUTE_READWRITE, 0, filesize, fdata.cFileName);
+        maph = CreateFileMapping(fdhandles[i], NULL, PAGE_READWRITE, 0, filesize, fdata.cFileName);
         if (maph == NULL)
         {
             printf("warning: could not create mapping for %s: %s\n", fdata.cFileName, strerror(GetLastError()));
