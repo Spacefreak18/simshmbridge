@@ -96,12 +96,9 @@ int main(int argc, char** argv) {
     	return 10;
     }
 
-
     void *addr;
     ftruncate(fd, SharedMemorySize);
     addr = mmap(NULL, SharedMemorySize, PROT_WRITE, MAP_SHARED, fd, 0);
-
-
 
     if (addr == MAP_FAILED)
     {
@@ -109,31 +106,23 @@ int main(int argc, char** argv) {
     	return 30;
     }
 
-    int duplicated_stdin = dup(0);
-    ftruncate(duplicated_stdin, SharedMemorySize);
-    read(duplicated_stdin, addr, SharedMemorySize);
-
+    if (pread(0, addr, SharedMemorySize, 0) < 0)
+    {
+        perror("pread");
+        return 40;
+    }
 
     double update_rate = UPDATE_RATE;
     while (go == 0)
     {
-
-        duplicated_stdin = dup(0);
-        lseek(duplicated_stdin, 0, SEEK_SET);
-
-        ftruncate(duplicated_stdin, SharedMemorySize);
-        read(duplicated_stdin, addr, SharedMemorySize);
+        if (pread(0, addr, SharedMemorySize, 0) < 0)
+        {
+            perror("pread");
+            return 40;
+        }
 
 	usleep((unsigned long)(1000000.0/update_rate));
     }
-
-    close(duplicated_stdin);
-    //fd = shm_unlink(MEM_FILE_LOCATION);
-    //if (fd == -1)
-    //{
-    //	perror("unlink");
-    //	return 100;
-    //}
 
     exit(0);
 }
